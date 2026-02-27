@@ -1,0 +1,31 @@
+{
+  "id": "fiscal-summary-2026-27",
+  "title": "NS Budget 2026-27 Fiscal Summary",
+  "document_name": "Budget 2026-27 (Main)",
+  "page_number": 1,
+  "section": "Fiscal Overview",
+  "fiscal_year": "2026-27",
+  "columns": ["Category", "2024-25 Actual", "2025-26 Estimate", "2026-27 Budget"],
+  "rows": [
+    {
+      "Category": "Total Revenues",
+      "2024-25 Actual": "TBD",
+      "2025-26 Estimate": "TBD",
+      "2026-27 Budget": "$17.3 billion"
+    },
+    {
+      "Category": "Total Expenses",
+      "2024-25 Actual": "TBD",
+      "2025-26 Estimate": "TBD",
+      "2026-27 Budget": "$18.9 billion"
+    },
+    {
+      "Category": "Deficit (before contingency)",
+      "2024-25 Actual": "TBD",
+      "2025-26 Estimate": "TBD",
+      "2026-27 Budget": "$1.19 billion"
+    }
+  ],
+  "notes": "Figures as published in the Nova Scotia Budget 2026-27. Update from source PDF after ingestion.",
+  "keywords": ["total revenue", "total expense", "deficit", "surplus", "fiscal summary", "budget overview", "bottom line", "17.3 billion", "18.9 billion", "1.19 billion"]
+}

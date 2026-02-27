@@ -1,0 +1,38 @@
+{
+  "id": "key-investments-2026-27",
+  "title": "NS Budget 2026-27 Key Investments & Program Highlights",
+  "document_name": "Budget Highlights",
+  "page_number": 1,
+  "section": "Budget Highlights",
+  "fiscal_year": "2026-27",
+  "columns": ["Program / Area", "Amount", "Notes"],
+  "rows": [
+    {
+      "Program / Area": "Fiscal Stability Plan (reductions)",
+      "Amount": "$900 million",
+      "Notes": "Multi-year plan to reduce deficit"
+    },
+    {
+      "Program / Area": "School Meal Programs",
+      "Amount": "$100.4 million",
+      "Notes": "Continued investment in student nutrition"
+    },
+    {
+      "Program / Area": "Cumulative Tax Savings (continuing)",
+      "Amount": "$681.2 million",
+      "Notes": "Approximately $1,400 per Nova Scotian"
+    },
+    {
+      "Program / Area": "Cape Breton Regional Cancer Centre",
+      "Amount": "$1.3 million",
+      "Notes": "Opening targeted for June 2027"
+    },
+    {
+      "Program / Area": "FTE Position Reductions",
+      "Amount": "~1,000 positions",
+      "Notes": "Public sector workforce reduction as part of Fiscal Stability Plan"
+    }
+  ],
+  "notes": "Key figures from Budget Highlights document. Verify exact figures and page numbers against source PDF after ingestion.",
+  "keywords": ["fiscal stability", "school meal", "tax savings", "cancer centre", "fte", "position", "reduction", "housing", "healthcare investment", "highlights", "key investment", "100.4 million", "681.2 million", "1.3 million", "900 million", "1400", "1,400"]
+}

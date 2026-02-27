@@ -1,0 +1,52 @@
+[
+  {
+    "question": "What is the projected deficit for 2026-27?",
+    "expected_answer_contains": ["1.19 billion", "deficit"],
+    "source": "Budget Highlights / Main Budget"
+  },
+  {
+    "question": "What are total revenues for 2026-27?",
+    "expected_answer_contains": ["17.3 billion"],
+    "source": "Main Budget"
+  },
+  {
+    "question": "What are total expenses for 2026-27?",
+    "expected_answer_contains": ["18.9 billion"],
+    "source": "Main Budget"
+  },
+  {
+    "question": "What is the Fiscal Stability Plan?",
+    "expected_answer_contains": ["900 million"],
+    "source": "Main Budget"
+  },
+  {
+    "question": "How much is being spent on school meal programs?",
+    "expected_answer_contains": ["100.4 million"],
+    "source": "Budget Highlights"
+  },
+  {
+    "question": "What tax savings does the budget continue?",
+    "expected_answer_contains": ["681.2 million"],
+    "source": "Budget Highlights"
+  },
+  {
+    "question": "What is happening with the Cape Breton cancer centre?",
+    "expected_answer_contains": ["1.3 million"],
+    "source": "Budget Highlights"
+  },
+  {
+    "question": "How many FTE positions are being reduced?",
+    "expected_answer_contains": ["1,000"],
+    "source": "Budget Address"
+  },
+  {
+    "question": "What is the healthcare budget for 2026-27?",
+    "expected_answer_contains": ["health"],
+    "source": "Estimates"
+  },
+  {
+    "question": "What does this budget mean for education?",
+    "expected_answer_contains": ["education"],
+    "source": "Estimates / Business Plan"
+  }
+]
