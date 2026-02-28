@@ -29,15 +29,16 @@ export async function POST(req: NextRequest) {
 
   // --- Parse request (AI SDK v6 sends { messages: UIMessage[] }) ---
   let message: string
+  let conversationMessages: { role: 'user' | 'assistant'; content: string }[]
   try {
     const body = await req.json()
-    // AI SDK v6 useChat sends full messages array; extract last user message
+    // AI SDK v6 useChat sends full messages array
     const messages: UIMessage[] = body.messages ?? []
     const lastUserMsg = messages.filter((m) => m.role === 'user').pop()
     if (!lastUserMsg) {
       return new Response('No user message found', { status: 400 })
     }
-    // Extract text from message parts
+    // Extract text from last user message (used for retrieval)
     message = lastUserMsg.parts
       .filter(isTextUIPart)
       .map((p) => p.text)
@@ -50,20 +51,34 @@ export async function POST(req: NextRequest) {
     if (message.length > 1000) {
       return new Response('Message too long (max 1000 characters)', { status: 400 })
     }
+
+    // Build full conversation history for Claude (maintains context across turns)
+    conversationMessages = messages
+      .filter((m) => m.role === 'user' || m.role === 'assistant')
+      .map((m) => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.parts
+          .filter(isTextUIPart)
+          .map((p) => p.text)
+          .join(' ')
+          .trim(),
+      }))
+      .filter((m) => m.content.length > 0)
   } catch {
     return new Response('Invalid JSON', { status: 400 })
   }
 
-  // --- Out-of-scope check ---
+  // --- Out-of-scope check (skip for follow-up messages in an active conversation) ---
+  const isFollowUp = conversationMessages.length > 1
   const queryType = classifyQuery(message)
-  if (queryType === 'out-of-scope') {
+  if (queryType === 'out-of-scope' && !isFollowUp) {
     return new Response(OUT_OF_SCOPE_RESPONSE, {
       status: 200,
       headers: { 'Content-Type': 'text/plain' },
     })
   }
 
-  // --- Retrieve context ---
+  // --- Retrieve context (based on last user message only) ---
   let context = ''
   try {
     const rawChunks = await retrieve(message)
@@ -74,16 +89,15 @@ export async function POST(req: NextRequest) {
     context = 'No relevant budget document sections could be retrieved for this query.'
   }
 
-  // --- Stream response ---
+  // --- Stream response with full conversation history ---
   const systemPrompt = buildSystemPrompt(context)
 
   const result = streamText({
     model: anthropic('claude-sonnet-4-5'),
     system: systemPrompt,
-    messages: [{ role: 'user', content: message }],
+    messages: conversationMessages,
     maxOutputTokens: MAX_OUTPUT_TOKENS,
     onFinish: async ({ text }) => {
-      // Write to cache for future queries (read from cache is Phase 2)
       if (text.length > 50) {
         await setCachedResponse(message, text)
       }
