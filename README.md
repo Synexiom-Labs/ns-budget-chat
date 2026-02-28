@@ -160,4 +160,4 @@ MIT — see [LICENSE](LICENSE).
 
 ---
 
-*Created by [Meghrajsinh Solanki](https://synexiom.com). Powered by [Synexiom Labs](https://synexiom.com).*
+*Created by Meghraj and Ruturaaj Solanki Powered by [Synexiom Labs](https://synexiomlabs.com).*
