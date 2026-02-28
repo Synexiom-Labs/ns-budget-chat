@@ -3,8 +3,8 @@ export default function Footer() {
     <footer className="border-t border-gray-100 bg-white">
       <div className="max-w-3xl mx-auto px-4 py-3 space-y-1">
         <p className="text-xs text-gray-400 text-center">
-          AI-generated answers based on official NS budget documents. Always verify against source
-          material. Not affiliated with the Government of Nova Scotia.
+          Not affiliated with the Government of Nova Scotia. AI-generated answers based on official NS budget documents. Always verify against source
+          material.
         </p>
         <p className="text-xs text-gray-400 text-center">
           <a
