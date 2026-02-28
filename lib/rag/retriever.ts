@@ -70,26 +70,38 @@ export async function retrieve(query: string): Promise<Chunk[]> {
   // Semantic search — fetch extra to allow post-filtering
   const searchResponse = await index.query({
     vector: embedding,
-    topK: 12,
+    topK: 16,
     includeMetadata: true,
   })
 
-  const semanticChunks: Chunk[] = searchResponse.matches
-    .filter((m) => (m.score ?? 0) >= 0.65)
-    .map((m) => ({
-      id: m.id,
-      content: (m.metadata?.content as string) ?? '',
-      metadata: {
-        document_name: (m.metadata?.document_name as string) ?? '',
-        page_number: (m.metadata?.page_number as number) ?? 0,
-        section_title: (m.metadata?.section_title as string) ?? '',
-        content_type: (m.metadata?.content_type as 'narrative' | 'table' | 'summary') ?? 'narrative',
-        department: m.metadata?.department as string | undefined,
-        fiscal_year: (m.metadata?.fiscal_year as string) ?? '2026-27',
-      },
-      score: m.score ?? 0,
-    }))
+  const toChunk = (m: (typeof searchResponse.matches)[0]): Chunk => ({
+    id: m.id,
+    content: (m.metadata?.content as string) ?? '',
+    metadata: {
+      document_name: (m.metadata?.document_name as string) ?? '',
+      page_number: (m.metadata?.page_number as number) ?? 0,
+      section_title: (m.metadata?.section_title as string) ?? '',
+      content_type: (m.metadata?.content_type as 'narrative' | 'table' | 'summary') ?? 'narrative',
+      department: m.metadata?.department as string | undefined,
+      fiscal_year: (m.metadata?.fiscal_year as string) ?? '2026-27',
+    },
+    score: m.score ?? 0,
+  })
+
+  // Primary pass: threshold 0.55 catches specific programs/acronyms that score lower
+  let semanticChunks: Chunk[] = searchResponse.matches
+    .filter((m) => (m.score ?? 0) >= 0.55)
+    .map(toChunk)
     .slice(0, 8)
+
+  // Fallback: if nothing passes 0.55, take the top 3 above 0.40 so the model always
+  // has some context to reason from rather than declaring total ignorance
+  if (semanticChunks.length === 0) {
+    semanticChunks = searchResponse.matches
+      .filter((m) => (m.score ?? 0) >= 0.40)
+      .map(toChunk)
+      .slice(0, 3)
+  }
 
   // For factual/comparison queries, also search pre-structured tables
   if (queryType === 'factual' || queryType === 'comparison') {
