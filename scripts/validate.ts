@@ -29,7 +29,15 @@ async function runTest(testCase: TestCase): Promise<TestResult> {
     const response = await fetch(`${BASE_URL}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: testCase.question }),
+      body: JSON.stringify({
+        messages: [
+          {
+            id: 'test-1',
+            role: 'user',
+            parts: [{ type: 'text', text: testCase.question }],
+          },
+        ],
+      }),
     })
 
     if (!response.ok) {

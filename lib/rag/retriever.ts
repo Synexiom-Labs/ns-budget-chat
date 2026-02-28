@@ -1,6 +1,6 @@
 import { Pinecone } from '@pinecone-database/pinecone'
 import { generateEmbedding } from './embeddings'
-import { Chunk, QueryType, StructuredTable } from '@/types'
+import { Chunk, QueryType } from '@/types'
 import { searchTables } from '@/lib/tables'
 
 let pineconeClient: Pinecone | null = null
@@ -18,11 +18,6 @@ const FINANCIAL_KEYWORDS = [
   'fte', 'position', 'staff', 'employee', 'percent', '%', 'tax', 'transfer',
 ]
 
-const DEPARTMENT_KEYWORDS = [
-  'health', 'education', 'housing', 'justice', 'environment', 'agriculture',
-  'transportation', 'finance', 'community', 'labour', 'energy', 'natural',
-  'business', 'senior', 'child', 'family', 'sport', 'recreation', 'tourism',
-]
 
 export function classifyQuery(query: string): QueryType {
   const lower = query.toLowerCase()

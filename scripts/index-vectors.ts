@@ -9,7 +9,8 @@ import path from 'path'
 import { Pinecone } from '@pinecone-database/pinecone'
 import { generateEmbeddings } from '../lib/rag/embeddings'
 import { ProcessedChunk } from '../types'
-import 'dotenv/config'
+import dotenv from 'dotenv'
+dotenv.config({ path: '.env.local' })
 
 const CHUNKS_DIR = path.join(process.cwd(), 'data', 'chunks')
 const UPSERT_BATCH_SIZE = 100

@@ -1,5 +1,4 @@
 import { Chunk, StructuredTable } from '@/types'
-import { v4 as uuidv4 } from 'uuid'
 import fiscalSummary from '@/data/tables/fiscal-summary.json'
 import keyInvestments from '@/data/tables/key-investments.json'
 

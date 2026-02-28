@@ -55,7 +55,7 @@ export function chunkDocument(pages: PageContent[], docInfo: DocInfo): Processed
   let i = 0
   while (i < paragraphs.length) {
     let chunkText = ''
-    let startPage = paragraphs[i].pageNumber
+    const startPage = paragraphs[i].pageNumber
     let j = i
 
     // Accumulate paragraphs until we hit the target chunk size
