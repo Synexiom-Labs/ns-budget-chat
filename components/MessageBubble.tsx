@@ -63,9 +63,13 @@ export default function MessageBubble({ message }: Props) {
 
   return (
     <div className="flex gap-3">
-      {/* AI avatar */}
-      <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-        <span className="text-white text-xs font-bold">AI</span>
+      {/* Synexiom Labs avatar */}
+      <div className="w-7 h-7 rounded-full bg-[#1a3a8f] flex items-center justify-center flex-shrink-0 mt-0.5 overflow-hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" className="w-5 h-5">
+          <rect x="20" y="22" width="42" height="50" rx="14" stroke="white" strokeWidth="3.5" fill="none"/>
+          <rect x="14" y="10" width="34" height="42" rx="12" stroke="white" strokeWidth="3.5" fill="none"/>
+          <circle cx="38" cy="40" r="11" fill="white"/>
+        </svg>
       </div>
 
       <div className="flex-1 min-w-0">
