@@ -17,7 +17,7 @@ export default function Footer() {
           </a>
           {' · '}
           <a
-            href="https://synexiom.com"
+            href="https://synexiomlabs.com"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-gray-600 transition-colors underline underline-offset-2"

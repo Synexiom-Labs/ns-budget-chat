@@ -483,7 +483,7 @@ The highest-risk task is **PDF table extraction (Hours 1–4).** Budget PDFs hav
 ### 9.1 Infrastructure
 
 - **Hosting:** Vercel (Hobby tier for launch; Pro at $20/mo if traffic requires it)
-- **Domain:** `budget.synexiom.com` or standalone (to be decided)
+- **Domain:** `budget.synexiomlabs.com` or standalone (to be decided)
 - **CI/CD:** Vercel auto-deploys from `main` branch. Preview deployments for PRs.
 - **Monitoring:** Vercel Analytics (traffic) + Anthropic Dashboard (API usage/cost)
 
