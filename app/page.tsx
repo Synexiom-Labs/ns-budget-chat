@@ -1,37 +1,69 @@
 import ChatInterface from '@/components/ChatInterface'
 import Footer from '@/components/Footer'
 
+function SynexiomLogo({ size = 28 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="22" width="42" height="50" rx="14" stroke="rgb(226,228,234)" strokeWidth="3.5" fill="none" />
+      <rect x="14" y="10" width="34" height="42" rx="12" stroke="rgb(226,228,234)" strokeWidth="3.5" fill="none" />
+      <circle cx="38" cy="40" r="11" fill="rgb(26,58,143)" />
+    </svg>
+  )
+}
+
 export default function Home() {
   return (
     <div className="flex flex-col h-full min-h-screen">
-      {/* Header */}
-      <header className="border-b border-gray-100 bg-white sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-semibold text-gray-900">NS Budget Chat</h1>
-            <p className="text-xs text-gray-500">Nova Scotia Budget 2026–27</p>
+      {/* Header — Synexiom dark void */}
+      <header
+        className="sticky top-0 z-10 flex-shrink-0"
+        style={{
+          background: 'rgb(6, 8, 16)',
+          borderBottom: '1px solid rgb(20, 28, 48)',
+          height: '58px',
+        }}
+      >
+        <div className="max-w-full px-6 h-full flex items-center justify-between">
+          {/* Left: logo + title */}
+          <div className="flex items-center gap-3">
+            <SynexiomLogo size={30} />
+            <div>
+              <h1
+                className="font-heading font-bold leading-none"
+                style={{ fontSize: '17px', color: 'rgb(226, 228, 234)', letterSpacing: '0.1px' }}
+              >
+                NS Budget Chat
+              </h1>
+              <p
+                className="hidden sm:block text-xs mt-0.5"
+                style={{ color: 'rgba(226, 228, 234, 0.5)' }}
+              >
+                Nova Scotia Budget 2026–27 · Plain Language Guide
+              </p>
+            </div>
           </div>
+
+          {/* Right: official budget link */}
           <a
-            href="https://www.synexiomlabs.com"
+            href="https://www.novascotia.ca/documents/budget-documents-2026-2027"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors"
-            aria-label="Synexiom Labs"
+            className="text-xs transition-colors"
+            style={{
+              color: 'rgba(226, 228, 234, 0.65)',
+              border: '1px solid rgb(30, 42, 66)',
+              padding: '5px 12px',
+              borderRadius: '6px',
+              textDecoration: 'none',
+            }}
           >
-            <div className="w-6 h-6 rounded-full bg-[#1a3a8f] flex items-center justify-center overflow-hidden">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" className="w-4 h-4">
-                <rect x="20" y="22" width="42" height="50" rx="14" stroke="white" strokeWidth="3.5" fill="none"/>
-                <rect x="14" y="10" width="34" height="42" rx="12" stroke="white" strokeWidth="3.5" fill="none"/>
-                <circle cx="38" cy="40" r="11" fill="white"/>
-              </svg>
-            </div>
-            <span className="hidden sm:inline">Synexiom Labs</span>
+            Official Budget ↗
           </a>
         </div>
       </header>
 
       {/* Main chat */}
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden" style={{ background: 'rgb(248, 250, 252)' }}>
         <ChatInterface />
       </main>
 

@@ -1,12 +1,12 @@
 'use client'
 
 const QUESTIONS = [
-  { text: 'What is the total deficit for 2026–27?', icon: '📊' },
-  { text: 'How much is being invested in healthcare?', icon: '🏥' },
-  { text: 'What is the Fiscal Stability Plan?', icon: '📋' },
-  { text: "What's happening with public sector jobs?", icon: '👥' },
-  { text: 'How much is being spent on housing?', icon: '🏠' },
-  { text: 'What does this budget mean for education?', icon: '🎓' },
+  { text: 'What is the total deficit for 2026–27?' },
+  { text: 'How much is being invested in healthcare?' },
+  { text: 'What is the Fiscal Stability Plan?' },
+  { text: "What's happening with public sector jobs?" },
+  { text: 'How much is being spent on housing?' },
+  { text: 'What does this budget mean for education?' },
 ]
 
 interface Props {
@@ -16,20 +16,44 @@ interface Props {
 export default function SuggestedQuestions({ onSelect }: Props) {
   return (
     <div>
-      <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3 text-center">
+      <p
+        className="text-xs font-medium uppercase tracking-wide mb-3 text-center"
+        style={{ color: 'rgb(148, 163, 184)' }}
+      >
         Try asking
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         {QUESTIONS.map((q) => (
           <button
             key={q.text}
             onClick={() => onSelect(q.text)}
-            className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm text-gray-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors shadow-sm"
+            className="text-left text-sm transition-all"
+            style={{
+              background: 'white',
+              border: '1px solid rgb(218, 224, 232)',
+              borderLeft: '3px solid rgb(26, 58, 143)',
+              borderRadius: '10px',
+              padding: '13px 15px',
+              color: 'rgb(30, 41, 59)',
+              cursor: 'pointer',
+              lineHeight: 1.45,
+            }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget
+              el.style.background = '#eef2ff'
+              el.style.borderLeftColor = 'rgb(34, 74, 175)'
+              el.style.transform = 'translateY(-1px)'
+              el.style.boxShadow = '0 3px 10px rgba(26,58,143,0.1)'
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget
+              el.style.background = 'white'
+              el.style.borderLeftColor = 'rgb(26, 58, 143)'
+              el.style.transform = 'none'
+              el.style.boxShadow = 'none'
+            }}
           >
-            <span className="text-base flex-shrink-0 mt-px" aria-hidden="true">
-              {q.icon}
-            </span>
-            <span>{q.text}</span>
+            {q.text}
           </button>
         ))}
       </div>

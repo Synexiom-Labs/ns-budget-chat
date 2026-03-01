@@ -1,40 +1,46 @@
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-100 bg-white">
-      <div className="max-w-3xl mx-auto px-4 py-3 space-y-1">
-        <p className="text-xs text-gray-400 text-center">
-          Not affiliated with the Government of Nova Scotia. AI-generated answers based on official NS budget documents. Always verify against source
-          material.
-        </p>
-        <p className="text-xs text-gray-400 text-center">
-          <a
-            href="https://github.com/synexiom-labs/ns-budget-chat"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-gray-600 transition-colors underline underline-offset-2"
-          >
-            Open Source
-          </a>
-          {' · '}
-          <a
-            href="https://synexiomlabs.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-gray-600 transition-colors underline underline-offset-2"
-          >
-            Built by Synexiom Labs
-          </a>
-          {' · '}
-          <a
-            href="https://www.novascotia.ca/documents/budget-documents-2026-2027"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-gray-600 transition-colors underline underline-offset-2"
-          >
-            Source Documents
-          </a>
-        </p>
-      </div>
+    <footer
+      className="flex-shrink-0 flex items-center justify-center gap-2 text-xs flex-wrap px-4"
+      style={{
+        background: 'rgb(6, 8, 16)',
+        borderTop: '1px solid rgb(20, 28, 48)',
+        height: '42px',
+        color: 'rgba(226, 228, 234, 0.4)',
+      }}
+    >
+      <span>Not affiliated with the Government of Nova Scotia.</span>
+      <span style={{ opacity: 0.3 }}>·</span>
+      <span>Built by</span>
+      <a
+        href="https://www.synexiomlabs.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-semibold transition-colors hover:text-white"
+        style={{ color: 'rgba(226, 228, 234, 0.7)', textDecoration: 'none' }}
+      >
+        Synexiom Labs
+      </a>
+      <span style={{ opacity: 0.3 }}>·</span>
+      <a
+        href="https://github.com/synexiom-labs/ns-budget-chat"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="transition-colors hover:text-white"
+        style={{ color: 'rgba(226, 228, 234, 0.5)', textDecoration: 'none' }}
+      >
+        Open Source
+      </a>
+      <span style={{ opacity: 0.3 }}>·</span>
+      <a
+        href="https://www.novascotia.ca/documents/budget-documents-2026-2027"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="transition-colors hover:text-white"
+        style={{ color: 'rgba(226, 228, 234, 0.5)', textDecoration: 'none' }}
+      >
+        Source Documents
+      </a>
     </footer>
   )
 }
