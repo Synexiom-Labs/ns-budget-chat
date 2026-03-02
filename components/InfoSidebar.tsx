@@ -39,7 +39,7 @@ export default function InfoSidebar() {
           </span>
         </a>
         <p className="text-xs leading-relaxed" style={{ color: 'rgb(100, 116, 139)' }}>
-          Building free, open civic tools for Nova Scotians.
+          Custom AI solutions built on reflective intelligence.
         </p>
       </div>
 
