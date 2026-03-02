@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter, Sora } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/react'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="h-full">
       <body className={`${inter.variable} ${sora.variable} font-sans h-full bg-white text-gray-900 antialiased`}>
         {children}
+        <Analytics />
       </body>
     </html>
   )

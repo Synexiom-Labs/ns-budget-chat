@@ -5,7 +5,29 @@ import { retrieve, classifyQuery } from '@/lib/rag/retriever'
 import { rerank, assembleContext } from '@/lib/rag/reranker'
 import { buildSystemPrompt, OUT_OF_SCOPE_RESPONSE } from '@/lib/rag/prompts'
 import { checkRateLimit } from '@/lib/rate-limit'
-import { setCachedResponse } from '@/lib/cache'
+import { getCachedResponse, setCachedResponse } from '@/lib/cache'
+
+// Stream a cached response in the AI SDK v6 data-stream wire format
+function streamCachedText(text: string, remaining: number): Response {
+  const encoder = new TextEncoder()
+  const stream = new ReadableStream({
+    start(controller) {
+      controller.enqueue(encoder.encode(`0:${JSON.stringify(text)}\n`))
+      controller.enqueue(
+        encoder.encode(`d:{"finishReason":"stop","usage":{"promptTokens":0,"completionTokens":0}}\n`)
+      )
+      controller.close()
+    },
+  })
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'x-vercel-ai-data-stream': 'v1',
+      'X-RateLimit-Remaining': String(remaining),
+      'X-Cache': 'HIT',
+    },
+  })
+}
 
 export const runtime = 'nodejs'
 export const maxDuration = 30
@@ -76,6 +98,14 @@ export async function POST(req: NextRequest) {
       status: 200,
       headers: { 'Content-Type': 'text/plain' },
     })
+  }
+
+  // --- Cache check (only for fresh single-turn queries, not follow-ups) ---
+  if (!isFollowUp) {
+    const cached = await getCachedResponse(message)
+    if (cached) {
+      return streamCachedText(cached, remaining)
+    }
   }
 
   // --- Retrieve context (based on last user message only) ---

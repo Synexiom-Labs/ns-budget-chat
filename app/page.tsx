@@ -1,5 +1,6 @@
 import ChatInterface from '@/components/ChatInterface'
 import Footer from '@/components/Footer'
+import InfoSidebar from '@/components/InfoSidebar'
 
 function SynexiomLogo({ size = 28 }: { size?: number }) {
   return (
@@ -63,8 +64,11 @@ export default function Home() {
       </header>
 
       {/* Main chat */}
-      <main className="flex-1 overflow-hidden" style={{ background: 'rgb(248, 250, 252)' }}>
-        <ChatInterface />
+      <main className="flex-1 overflow-hidden flex" style={{ background: 'rgb(248, 250, 252)' }}>
+        <InfoSidebar />
+        <div className="flex-1 overflow-hidden">
+          <ChatInterface />
+        </div>
       </main>
 
       {/* Footer */}
