@@ -1,8 +1,8 @@
 # NS Budget Chat — Technical Specification
 
 **Project:** `ns-budget-chat`
-**Version:** 1.0 — Phase 1
-**Date:** February 2026
+**Version:** 1.1 — Phase 1 Complete
+**Date:** March 2026
 **License:** MIT (Open Source)
 **Repository:** `github.com/synexiom-labs/ns-budget-chat`
 
@@ -28,43 +28,54 @@ This is the most important question. Here's the honest answer:
 
 **Where this is genuinely better than raw PDF upload:**
 
-- **Pre-structured financial tables.** Frontier models are bad at reading complex PDF tables — they misread columns, confuse row labels, hallucinate numbers. We pre-extract and structure key tables into clean JSON, so numerical answers are more accurate than what Claude/GPT produce from raw PDFs.
-- **Cross-document linking.** When you upload six PDFs to Claude, it sees separate blobs. Our system pre-links related content — connecting a Highlights bullet to the Estimates table to the Business Plan rationale.
+- **Pre-structured financial tables.** Frontier models are bad at reading complex PDF tables — they misread columns, confuse row labels, hallucinate numbers. We pre-extract and structure key tables into clean JSON, so numerical answers are more accurate.
+- **Cross-document linking.** Our system pre-links related content across all six documents.
 - **Embedded prompt expertise.** The system prompt enforces citation, neutrality, and accuracy standards that every user benefits from, regardless of their AI experience.
-- **Shareability.** A URL you can share with 50 colleagues. Not a personal chat session.
+- **Response caching.** Popular questions (asked by dozens of users) are answered instantly from cache at zero additional API cost.
+- **Shareability.** A URL you can share with colleagues. Not a personal chat session.
 
 **The value proposition in one line:**
 
 > *Built so you don't need an AI subscription or a finance degree to understand where your tax dollars are going.*
 
-### 1.4 Success Criteria (Phase 1)
+### 1.4 Success Criteria (Phase 1) — Delivered
 
-- Deployed and publicly accessible within 48 hours
-- Accurately answers questions about all six budget documents with page-level citations
-- Handles 50+ concurrent users without degradation
-- All answers include source document and page references
-- Open-source repository published and documented for community use
-- Anyone can fork this and adapt it for their own government's budget
+- ✅ Deployed and publicly accessible at `nsbudget.synexiomlabs.com`
+- ✅ Accurately answers questions about all six budget documents with page-level citations
+- ✅ All answers include source document and page references with PDF links
+- ✅ Sources side panel shows clickable PDF links for every cited page
+- ✅ Rate limiting (20 req/min per IP) and response caching (1-week TTL)
+- ✅ Multi-turn conversation context maintained across follow-up questions
+- ✅ Open-source repository published and documented for community use
+- ✅ Anyone can fork this and adapt it for their own government's budget
 
 ### 1.5 Open-Source Philosophy
 
-This project is built in the open, for the public. The goal is not to market a brand — it's to build something useful and let the work speak for itself. Specifically:
+This project is built in the open, for the public.
 
-- **MIT Licensed.** Anyone can use, modify, fork, and distribute. No restrictions.
+- **MIT Licensed.** Anyone can use, modify, fork, and distribute.
 - **Fully reproducible.** Every step from PDF ingestion to deployment is documented. A developer in New Brunswick or British Columbia should be able to fork this repo and have their own budget chatbot running within hours.
-- **No paywalls, no signups, no tracking.** The app doesn't collect personal data, doesn't require accounts, and doesn't gate features.
-- **Template by design.** The architecture is deliberately generic — budget-specific logic is separated from the RAG infrastructure so this can become a reusable pattern for any government budget, anywhere.
-- **Community contributions welcome.** Phase 2+ features are filed as GitHub Issues with "good first issue" labels. The CONTRIBUTING.md makes it easy for anyone to help improve the tool.
+- **No paywalls, no signups.** The app collects no personal data and requires no accounts.
+- **Template by design.** Budget-specific logic is separated from the RAG infrastructure so this can become a reusable pattern for any government budget, anywhere.
+- **Analytics without surveillance.** Vercel Analytics tracks aggregate traffic (page views, referrers) and anonymised click events — no personal data, no cookies required.
 
 ### 1.6 Branding Approach
 
-Subtle. The product is the brand.
+Synexiom Labs branding is visible but never intrusive. The civic tool is the product.
 
-- The app header shows the app name: **"NS Budget Chat"**
-- The footer reads: `Open Source · Built by Synexiom Labs · GitHub`
-- The README credits the creator and context naturally
-- No logos in the chat interface, no marketing copy, no calls to action
-- People discover who built it by using something good — not by being told
+**Colour palette:**
+- Void: `rgb(6, 8, 16)` — header, footer background
+- Brand: `rgb(26, 58, 143)` — user bubbles, accents, left-border cards
+- Surface: `rgb(248, 250, 252)` — chat area background
+- Text: `rgb(30, 41, 59)` — body text
+
+**Implementation:**
+- Header: dark void background with inline Synexiom Labs SVG logo + app name (Sora font)
+- Left sidebar (desktop only, 220px): Synexiom Labs logo + link, Open Source, Source Documents, AI disclaimer
+- Mobile header: hamburger menu with all links and disclaimer
+- Footer (single row): AI disclaimer + Built by Synexiom Labs + Open Source + Source Documents
+- All Synexiom Labs link clicks are tracked as custom Vercel Analytics events (`synexiom_click`)
+- Favicon: Synexiom Labs logo on dark background (`app/icon.svg`)
 
 ---
 
@@ -77,64 +88,47 @@ Subtle. The product is the brand.
 | **Budget 2026–27 (Main)** | 5.7 MB | 73 | Mixed narrative + tables | Dual: tables → structured JSON, narrative → semantic chunks |
 | **Budget Address** | 8.12 MB | ~30 | Narrative (speech) | Semantic chunking by topic/section |
 | **Estimates & Supplementary Detail** | 10.06 MB | ~200+ | Heavy tables, dept-by-dept | Table extraction → structured JSON with dept metadata |
-| **Highlights** | 127 KB | ~4 | Summary bullet points | Full text as single high-priority chunk |
+| **Budget Highlights** | 127 KB | ~4 | Summary bullet points | Full text as single high-priority chunk |
 | **Government Business Plan** | 8.41 MB | ~100+ | Mixed strategy + outcomes | Semantic chunking by department/priority area |
 | **Additional Appropriations** | 94 KB | ~2 | Small table addendum | Full text as single chunk |
 
 **Source URL:** `https://www.novascotia.ca/documents/budget-documents-2026-2027`
 
-**PDF Download URLs** (to be confirmed/hardcoded in ingest script):
-```
-https://www.novascotia.ca/sites/default/files/documents/7-4172/budget-2026-27-en.pdf
-https://www.novascotia.ca/sites/default/files/documents/.../budget-address-2026-27-en.pdf
-https://www.novascotia.ca/sites/default/files/documents/7-4172/budget-estimates-2026-27-en.pdf
-https://www.novascotia.ca/sites/default/files/documents/.../budget-highlights-2026-27-en.pdf
-https://www.novascotia.ca/sites/default/files/documents/6-4173/ftb-bfi-046-en-budget-2026-2027.pdf
-https://www.novascotia.ca/sites/default/files/documents/.../additional-appropriations-2026-27-en.pdf
-```
-
-> **Note:** Some URLs may need to be discovered by scraping the budget documents page. The ingest script should attempt to resolve all six documents programmatically.
+**Total indexed:** 217 chunks across all six documents.
 
 ### 2.2 Document Processing Pipeline
 
 Each document passes through three stages:
 
-#### Stage 1: PDF Extraction
+#### Stage 1: PDF Extraction (`scripts/ingest.ts` + `scripts/process.ts`)
 
-- **Text extraction:** Use `pdf-parse` (Node.js) for narrative content
-- **Table extraction:** Use `tabula-py` or `camelot-py` (Python) for financial tables. Budget PDFs have complex multi-level tables that require specialized extraction.
-- **Metadata preservation:** Every extracted chunk retains: `document_name`, `page_number`, `section_title`
-- **Fallback:** If automated table extraction fails for specific tables, manually structure the 10–15 critical financial summary tables as JSON. This is acceptable for Phase 1.
+- **Text extraction:** `pdf-parse` (Node.js) for narrative content
+- **Metadata preservation:** Every extracted chunk retains `document_name`, `page_number`, `section_title`
+- **Fallback:** Critical financial tables are manually pre-structured as JSON in `data/tables/`
 
-#### Stage 2: Content Structuring
+#### Stage 2: Content Structuring (`lib/pdf/chunker.ts`)
 
 **Narrative content:**
 - Split at paragraph/section boundaries
 - Target chunk size: 500–800 tokens with 100-token overlap
-- Each chunk inherits its section header hierarchy as metadata
-- Preserve formatting cues (bullet lists, emphasis) as they signal importance
+- Each chunk inherits section header as metadata
 
-**Financial tables:**
-- Extract as complete units — never split a table across chunks
-- Convert to structured JSON with: column headers, row labels, values, units
-- Calculate year-over-year deltas where FY25-26 comparisons exist
-- Tag with department name and budget category
+**Financial tables (`lib/tables.ts`):**
+- Stored as structured JSON with column headers, row labels, values, units
+- Searched via keyword matching alongside semantic retrieval
+- Not embedded — looked up directly by query keyword at retrieval time
 
-**Cross-references:**
-- Link Highlights bullets to corresponding Estimates tables
-- Link Business Plan outcomes to budget line items
-- Store as metadata so retrieval can pull related chunks together
+#### Stage 3: Vector Indexing (`scripts/index-vectors.ts`)
 
-#### Stage 3: Vector Indexing
-
-- **Embedding model:** Voyage AI `voyage-3-large` (preferred) or OpenAI `text-embedding-3-small` (fallback)
-- **Vector store:** Pinecone serverless (free tier) — or ChromaDB for fully self-hosted option
+- **Embedding model:** Voyage AI `voyage-3-large` — 1024 dimensions
+- **Vector store:** Pinecone serverless (free tier)
+- **Batch size:** 128 chunks per batch with 200ms rate-limit pause between batches
 - **Metadata fields per chunk:**
   - `document_name` (string)
   - `page_number` (int)
   - `section_title` (string)
   - `content_type` (enum: narrative | table | summary)
-  - `department` (string, if applicable)
+  - `department` (string, optional)
   - `fiscal_year` (string)
 
 ---
@@ -146,141 +140,150 @@ Each document passes through three stages:
 ```
 User Query
     ↓
-Query Classification (factual / comparison / explanation / exploratory)
+Rate Limit Check (Upstash Redis sliding window — 20 req/60s per IP)
     ↓
+Query Classification (factual / comparison / explanation / exploratory / out-of-scope)
+    ↓
+Cache Check (Upstash Redis — skip for follow-up messages)
+    ↓ cache miss
 Hybrid Retrieval
-    ├── Semantic search (vector store) → narrative context
-    └── Structured lookup (JSON tables) → exact numbers
+    ├── Semantic search (Voyage AI → Pinecone) — topK 16, threshold 0.55 / fallback 0.40
+    └── Structured lookup (JSON tables) — for factual + comparison queries
     ↓
-Context Assembly (ranked, deduplicated, max ~8,000 tokens)
+Reranking + Deduplication (up to 8 chunks assembled)
     ↓
-Claude Sonnet 4 (reasoning + synthesis + citation)
+Claude Sonnet 4.5 (full conversation history, max 1500 output tokens)
     ↓
-Cited Response with source badges
+Cited response → cache write (onFinish, TTL 1 week)
+    ↓
+AI SDK v6 data stream → useChat → Message rendered with citation badges
 ```
 
 ### 3.2 Technology Stack
 
-| Layer | Technology | Rationale |
-|-------|-----------|-----------|
-| **Frontend** | Next.js 14+ (App Router) | Fast SSR, built-in API routes, Vercel deployment |
-| **UI** | Tailwind CSS + shadcn/ui | Rapid prototyping, clean design system |
-| **AI / LLM** | Claude Sonnet 4 (Anthropic API) | Best reasoning for numerical data; cost-effective |
-| **Embeddings** | Voyage AI or OpenAI | High-quality semantic search |
-| **Vector Store** | Pinecone serverless or ChromaDB | Free tier sufficient; self-host option |
-| **PDF Processing** | pdf-parse + tabula-py | Text + table extraction |
-| **Hosting** | Vercel | Zero-config Next.js, global CDN |
-| **Repository** | GitHub (synexiom-labs org) | Open source, community contributions |
+| Layer | Technology | Version | Rationale |
+|-------|-----------|---------|-----------|
+| **Framework** | Next.js App Router | 14.2.35 | SSR, built-in API routes, Vercel deployment |
+| **UI** | Tailwind CSS + shadcn/ui | 3.4 | Rapid prototyping, design system |
+| **Fonts** | Inter + Sora (next/font/google) | — | Inter for body, Sora for headings |
+| **AI / LLM** | Claude Sonnet 4.5 (Anthropic) | claude-sonnet-4-5 | Best reasoning for numerical data |
+| **AI SDK** | Vercel AI SDK | ai v6.0.103, @ai-sdk/react v3 | Streaming, useChat hook, UIMessage protocol |
+| **Embeddings** | Voyage AI voyage-3-large | 1024 dims | High-quality semantic search |
+| **Vector Store** | Pinecone serverless | v7.1.0 | Free tier, upsert API |
+| **Cache + Rate Limit** | Upstash Redis | @upstash/ratelimit v2 | Serverless Redis, sliding window limiter |
+| **PDF Processing** | pdf-parse | v2.4.5 | Text extraction from PDFs |
+| **Analytics** | Vercel Analytics | v1.6.1 | Page views, custom click events |
+| **Hosting** | Vercel Hobby | — | Zero-config Next.js, global CDN |
+| **Repository** | GitHub (synexiom-labs org) | — | Open source, community contributions |
 
 ### 3.3 Query Processing Flow (Detailed)
 
-**Step 1 — Query Classification:**
-Analyze the user's question to determine type:
-- **Factual:** "What is the healthcare budget?" → prioritize structured table data
-- **Comparison:** "How does education compare to last year?" → retrieve both FY26-27 and FY25-26 data
-- **Explanation:** "Why is there a deficit?" → prioritize narrative sections, Budget Address
-- **Exploratory:** "What does the budget mean for Cape Breton?" → broad retrieval across documents, regional tags
-- **Out of scope:** "What's the weather?" → politely redirect
+**Step 1 — Rate Limit Check:**
+Upstash Redis sliding window. 20 requests per 60 seconds per IP. Returns `429` with `Retry-After: 60` header on violation.
 
-**Step 2 — Hybrid Retrieval:**
-- Run semantic search against vector store (top 8 chunks, threshold ≥ 0.7)
-- Simultaneously run structured lookup against indexed tables if query contains dollar amounts, department names, or comparison language
-- For factual queries: weight structured data higher (0.7 structured / 0.3 semantic)
-- For explanation queries: weight narrative higher (0.3 structured / 0.7 semantic)
+**Step 2 — Query Classification (`lib/rag/retriever.ts`):**
+- **Out-of-scope:** Regex patterns (greetings, weather, sports, etc.) → returns polite redirect via stream
+- **Factual:** Keywords like "how much", "total", dollar amounts → prioritize structured tables
+- **Comparison:** Keywords like "compare", "last year", "increase", "decrease" → pull both years' data
+- **Explanation:** Keywords like "why", "explain", "what does" → prioritize narrative chunks
+- **Exploratory:** Default — broad retrieval across documents
 
-**Step 3 — Context Assembly:**
-- Rank retrieved chunks by weighted relevance
-- Deduplicate overlapping content
-- Assemble into context window with clear source attribution per chunk
-- Cap at ~8,000 tokens to leave room for LLM reasoning
-- Include chunk metadata as inline annotations: `[Source: Estimates, p.42, Health and Wellness]`
+**Step 3 — Cache Check (`lib/cache.ts`):**
+Only for single-turn queries (not follow-ups in active conversations). Cache key: normalized query (lowercase, trimmed, punctuation stripped). TTL: 1 week. Cache reads and writes both enabled.
 
-**Step 4 — LLM Reasoning:**
-- Send assembled context + user query to Claude Sonnet 4
-- System prompt enforces citation, accuracy, and neutrality rules (see Section 4)
-- Stream response token-by-token for perceived speed
+**Step 4 — Hybrid Retrieval (`lib/rag/retriever.ts`):**
+- Voyage AI embedding of query (1024 dims)
+- Pinecone query: topK 16, include metadata
+- Primary filter: similarity ≥ 0.55, take top 8
+- Fallback: if none pass 0.55, take top 3 above 0.40 (prevents "I know nothing" responses for acronyms/specific programs)
+- For factual/comparison: merge structured table chunks first (higher priority), then semantic chunks, deduplicated, max 8
 
-**Step 5 — Response Formatting:**
-- Parse Claude's response to extract citation references
-- Convert inline citations to clickable citation badges
-- Ensure no response is returned without at least one source reference
+**Step 5 — Context Assembly (`lib/rag/reranker.ts`):**
+- Keyword-based reranking within retrieved chunks
+- Deduplication by chunk ID or content prefix
+- Assembled with inline source attribution: `[Document Name, p.XX, Section]`
+
+**Step 6 — LLM Reasoning:**
+- `streamText` via `@ai-sdk/anthropic`
+- Full `conversationMessages` array passed for multi-turn context
+- System prompt: see Section 4.1
+- `maxOutputTokens: 1500`
+- `onFinish`: writes response to Redis cache
+
+**Step 7 — Response Streaming:**
+- `result.toUIMessageStreamResponse()` for live Claude responses
+- Manual `ReadableStream` with `d:` + `e:` finish chunks for cached responses and out-of-scope replies
+- Client uses `useChat` from `@ai-sdk/react` with `sendMessage({ text })` API
+- Citations parsed client-side via regex: `/\[([^\]]+),\s*p\.(\d+)(?:,\s*([^\]]+))?\]/g`
 
 ---
 
 ## 4. AI Layer Design
 
-### 4.1 System Prompt
-
-This is the most critical component. It must balance accuracy, context, honesty, and accessibility.
+### 4.1 System Prompt (`lib/rag/prompts.ts`)
 
 ```
-You are the NS Budget Chat assistant — a free, open-source tool that helps
-Nova Scotians understand their provincial Budget 2026–27.
+You are the NS Budget Chat assistant — a free, open-source tool built by Synexiom Labs
+(synexiomlabs.com) that helps Nova Scotians understand their provincial Budget 2026–27.
 
-You are NOT a government tool. You do NOT represent the Province of Nova Scotia.
-You are an AI assistant that reads and interprets publicly available budget documents.
+You are NOT a government tool. You do NOT represent the Province of Nova Scotia. You are
+an AI assistant built by Synexiom Labs that reads and interprets publicly available budget
+documents. If anyone asks who built you or who made this tool, always say it was built by
+Synexiom Labs.
 
 ## RULES (non-negotiable)
 
-1. CITE EVERYTHING. Every factual claim must reference [Document Name, p.XX].
-   If you cannot find supporting evidence, say "I couldn't find this specific
-   information in the budget documents" — never guess.
+1. CITE EVERYTHING. Every factual claim must reference [Document Name, p.XX]. If the
+   retrieved context does not directly answer the question but contains related information,
+   share what you found and note that the specific detail may be in a section not retrieved.
+   Only say "I couldn't find this" if the context is entirely unrelated.
 
-2. NEVER FABRICATE NUMBERS. If a figure is not explicitly in the source data,
-   do not infer, round, estimate, or calculate it. State that the specific
-   number was not found and suggest where the user might look.
+2. NEVER FABRICATE NUMBERS. If a figure is not explicitly in the source data, do not infer,
+   round, estimate, or calculate it. State that the specific number was not found and suggest
+   where the user might look.
 
 3. SHOW YOUR MATH. For comparisons, always show both figures and the change.
-   Example: "Healthcare spending is $6.7B in FY27, up from $5.8B in FY25 —
-   an increase of approximately $900M [Estimates, p.XX]."
 
-4. BE POLITICALLY NEUTRAL. Explain what the numbers say and what they mean.
-   Do not editorialize on whether decisions are good or bad. Use phrases like
-   "the budget allocates" not "the government chose to cut."
+4. BE POLITICALLY NEUTRAL. Explain what the numbers say and what they mean. Do not
+   editorialize on whether decisions are good or bad.
 
-5. USE PLAIN LANGUAGE. Define jargon when you use it. "FTE" becomes "full-time
-   equivalent positions." "Consolidated entity" becomes "organizations that are
-   part of the provincial government's books."
+5. USE PLAIN LANGUAGE. Define jargon when you use it.
 
 6. ACKNOWLEDGE SCOPE. If a question is outside the budget documents, say so.
-   Don't speculate about policy intentions, political motivations, or future
-   decisions not documented in the budget.
 
-7. BE CONCISE. Answer the question asked. Offer to go deeper if relevant,
-   but don't dump everything you know.
+7. BE CONCISE. Answer the question asked. Offer to go deeper if relevant.
 
 ## CONTEXT FROM BUDGET DOCUMENTS
 {context}
-
-## USER QUESTION
-{query}
 ```
 
-### 4.2 Chunking Strategy
-
-Budget documents need content-aware chunking, not naive text splitting:
+### 4.2 Chunking Strategy (`lib/pdf/chunker.ts`)
 
 | Content Type | Chunk Size | Overlap | Split Boundaries |
 |-------------|-----------|---------|-----------------|
 | Narrative (Address, Plan) | 500–800 tokens | 100 tokens | Paragraph/section breaks |
 | Financial tables | Full table (no split) | N/A | Table boundaries |
-| Summary (Highlights) | Full document | N/A | N/A (single chunk) |
-| Small addenda | Full document | N/A | N/A (single chunk) |
+| Summary (Highlights) | Full document | N/A | Single chunk |
+| Small addenda | Full document | N/A | Single chunk |
 
 ### 4.3 Retrieval Parameters
 
-- **Top-K:** 8 chunks per query
-- **Similarity threshold:** 0.7 minimum
-- **Reranking weights:** semantic similarity (0.6) + metadata relevance (0.4)
-- **Table boost:** 1.5x ranking boost for queries containing dollar amounts or department names
-- **Cross-document bonus:** If a Highlights chunk is retrieved, also pull the linked Estimates chunk
+| Parameter | Value | Notes |
+|-----------|-------|-------|
+| **topK** | 16 | Fetch extra to allow post-filtering |
+| **Primary threshold** | 0.55 | Catches specific programs and acronyms |
+| **Fallback threshold** | 0.40 | Top 3 — ensures model always has some context |
+| **Max chunks returned** | 8 | After deduplication and merge |
+| **Table boost** | First position | Structured tables prepended for factual queries |
 
 ### 4.4 Response Quality Safeguards
 
-- **Citation requirement:** If Claude cannot cite a source for a claim, it must flag this explicitly
-- **Number validation:** For critical financial figures (deficit, total revenue, total expenses), hardcode ground truth values and validate Claude's response against them before displaying
-- **Confidence signals:** Encourage Claude to distinguish between "the budget states" (direct quote) and "this suggests" (inference)
-- **Hallucination test suite:** Maintain a set of 30+ question-answer pairs with verified correct answers; run as regression test before each deployment
+- **Citation requirement:** System prompt mandates `[Document, p.X]` format for every factual claim
+- **Anti-hallucination:** Pre-structured JSON tables for key financial figures bypass vector search entirely
+- **Never-fabricate rule:** Explicit instruction not to infer, round, or estimate numbers not in source data
+- **Scope guard:** Query classifier redirects out-of-scope questions before touching the LLM
+- **Confidence signals:** "The budget states" (direct) vs "this suggests" (inference)
+- **Test suite:** `scripts/validate.ts` runs ground-truth Q&A pairs — run before each deployment
 
 ---
 
@@ -288,44 +291,69 @@ Budget documents need content-aware chunking, not naive text splitting:
 
 ### 5.1 Interface Components
 
-**Chat Interface:**
-- Full-width conversational UI with streaming responses
-- Messages render token-by-token for perceived speed
-- Markdown rendering for formatted responses (tables, bold, lists)
-- Auto-scroll to latest message
+**Page Layout (`app/page.tsx`):**
+- Dark void header (58px): Synexiom Labs logo + "NS Budget Chat" title (Sora font) + MobileMenu
+- Main area: `flex` row — InfoSidebar (desktop) + ChatInterface (flex-1)
+- Footer (single row): AI disclaimer + brand links
 
-**Citation Badges:**
-- Each cited source shows as a small badge: `📄 Estimates, p.42`
-- Clicking a badge opens a side panel or modal with the source text
-- Multiple citations per response are displayed inline
+**InfoSidebar (`components/InfoSidebar.tsx`):**
+- Hidden on mobile, 220px on `lg+` screens
+- Synexiom Labs logo + link (tracked: `synexiom_click`)
+- Open Source GitHub link (tracked: `github_click`)
+- Source Documents link (tracked: `source_docs_click`)
+- AI disclaimer text
+- White background with right border
 
-**Suggested Questions (Landing State):**
-On first load, show 4–6 curated starters:
-- "What is the total deficit for 2026–27?"
-- "How much is being invested in healthcare?"
-- "What is the Fiscal Stability Plan?"
-- "What's happening with public sector jobs?"
-- "How much is being spent on housing?"
-- "What does this budget mean for education?"
+**MobileMenu (`components/MobileMenu.tsx`):**
+- Hidden on `sm+` (replaced by static "Official Budget ↗" link)
+- Hamburger button on mobile → dark void dropdown overlay
+- Links: Synexiom Labs, Official Budget, Open Source, Source Documents
+- All clicks tracked with `location: 'mobile_menu'` property
 
-**Disclaimer:**
-Persistent, subtle footer text:
-> *AI-generated answers based on official budget documents. Always verify against source material. Not affiliated with the Government of Nova Scotia.*
+**ChatInterface (`components/ChatInterface.tsx`):**
+- `useChat` hook from `@ai-sdk/react` — messages, sendMessage, status, error
+- Welcome hero (pre-first-message): Synexiom logo card, title, tagline, disclaimer badge
+- Suggested question cards (6 items, brand blue left-border accent)
+- Message list with `msg-appear` fade-up animation
+- Loading dots (brand blue, staggered bounce)
+- Textarea input with auto-resize (max 160px) + Send button
+- Sources panel state: `panelOpen`, `panelSources` — `marginRight: 360px` when open
+
+**MessageBubble (`components/MessageBubble.tsx`):**
+- User messages: brand blue bubble (`rgb(26, 58, 143)`), right-aligned, `18px/18px/4px/18px` corners
+- Assistant messages: white card bubble with left avatar, `18px/18px/18px/4px` corners
+- Citation parsing: regex `/\[([^\]]+),\s*p\.(\d+)(?:,\s*([^\]]+))?\]/g`
+- Citation badges (CitationBadge) rendered below bubble
+- "📄 N sources found" button triggers SourcesPanel
+
+**SourcesPanel (`components/SourcesPanel.tsx`):**
+- Fixed right panel: `top-[58px]` to `bottom-[42px]`, width 360px (full-width on mobile)
+- Dark void theme (`rgb(10, 14, 24)`)
+- `panelSlide` animation (translateX from right)
+- Per-source card: document name, page badge, section, "View in PDF ↗" link
+- PDF links from `lib/pdf-urls.ts` with `#page=X` anchors to exact pages
+
+**SuggestedQuestions (`components/SuggestedQuestions.tsx`):**
+- 2-column grid on `sm+`, 1-column on mobile
+- Cards: white background, `3px solid rgb(26, 58, 143)` left border
+- Hover: `#eef2ff` background, `translateY(-1px)` lift, shadow
 
 ### 5.2 Design Principles
 
-- **Mobile-first.** Most traffic will be mobile. Design for 375px width first.
-- **Fast.** First meaningful paint < 1.5s. Streaming response begins < 2s after submission.
-- **Accessible.** WCAG 2.1 AA. Proper heading hierarchy, keyboard nav, screen reader support.
-- **Clean.** No visual clutter. The chat is the product. White/light background, clear typography.
-- **Minimal branding.** App name in header. "Open Source · Built by Synexiom Labs · GitHub" in footer. That's it.
+- **Mobile-first.** MobileMenu on `<sm`, InfoSidebar on `lg+`. SourcesPanel full-width on `<sm`.
+- **Streaming UX.** Responses begin rendering token-by-token. Cache hits appear instantly.
+- **Accessible.** Semantic HTML, `aria-label` on all interactive controls, keyboard navigation.
+- **No layout shift.** Welcome screen and message list share the same flex container — no jarring transitions.
+- **Dark header/footer, light chat.** Synexiom void brand framing a clean white/gray chat area.
 
 ### 5.3 App Identity
 
 - **Name:** NS Budget Chat
-- **Tagline:** "Understand your provincial budget in plain language"
-- **Footer:** `Open Source · Built by Synexiom Labs · GitHub`
-- **Meta description:** "Free AI chatbot for exploring the Nova Scotia Budget 2026–27. Ask questions, get cited answers. No signup required."
+- **Tagline:** "Nova Scotia Budget 2026–27 · Plain Language Guide"
+- **Meta title:** `NS Budget Chat — Nova Scotia Budget 2026–27`
+- **Meta description:** `Free AI chatbot for exploring the Nova Scotia Budget 2026–27. Ask questions, get cited answers. No signup required.`
+- **Favicon:** Synexiom Labs logo (two rounded rectangles + circle) on dark `#06080f` background — `app/icon.svg`
+- **Header fonts:** Sora (headings) via `--font-sora`, Inter (body) via `--font-inter`
 
 ---
 
@@ -335,59 +363,78 @@ Persistent, subtle footer text:
 
 | Method | Endpoint | Description | Rate Limit |
 |--------|----------|-------------|------------|
-| `POST` | `/api/chat` | Submit question, get streamed response | 20 req/min per IP |
-| `GET` | `/api/suggestions` | Return curated starter questions | 60 req/min |
-| `GET` | `/api/health` | Health check for monitoring | No limit |
+| `POST` | `/api/chat` | Submit message array, get streamed response | 20 req/min per IP |
 
 ### 6.2 `/api/chat` Request/Response
 
-**Request:**
+**Request (AI SDK v6 `useChat` format):**
 ```json
 {
-  "message": "What is the healthcare budget?",
-  "conversation_id": "optional-uuid-for-context"
-}
-```
-
-**Response (streamed):**
-Server-Sent Events (SSE) stream with token-by-token output. Final message includes structured citation metadata:
-```json
-{
-  "content": "The healthcare budget for FY2026-27 is...",
-  "citations": [
+  "messages": [
     {
-      "document": "Estimates & Supplementary Detail",
-      "page": 42,
-      "section": "Health and Wellness",
-      "text_snippet": "..."
+      "id": "msg-abc",
+      "role": "user",
+      "parts": [{ "type": "text", "text": "What is the healthcare budget?" }]
     }
   ]
 }
 ```
 
+Full `messages` array is sent on every request for multi-turn context. The route extracts the last user message for retrieval, and the full array for conversation history passed to `streamText`.
+
+**Response (AI SDK v6 data stream format):**
+```
+Content-Type: text/plain; charset=utf-8
+x-vercel-ai-data-stream: v1
+X-RateLimit-Remaining: 19
+X-Cache: HIT  (if served from Redis)
+
+0:"Healthcare spending in Nova Scotia's Budget 2026–27..."\n
+d:{"finishReason":"stop","usage":{"promptTokens":0,"completionTokens":0}}\n
+e:{"finishReason":"stop","usage":{"promptTokens":0,"completionTokens":0}}\n
+```
+
+**Important stream protocol detail:** The `useChat` hook in `@ai-sdk/react` v3 requires **both** `d:` (step finish) and `e:` (message finish) chunks to commit a message to state. The `e:` chunk is mandatory — omitting it causes the response to be silently discarded by the client.
+
 ### 6.3 Rate Limiting & Cost Control
 
-- **Per-IP rate limiting:** 20 queries/minute, 200/hour (configurable via env)
-- **Response token cap:** 1,500 output tokens max per response
-- **Monthly budget alert:** Set Anthropic API alert at $50/month
-- **Response caching:** Cache exact-match and semantic-near-match Q&A pairs. Budget data is static, so cached answers remain valid indefinitely.
-- **Embedding cache:** Cache query embeddings to avoid re-computing for similar questions
+- **Per-IP rate limiting:** 20 queries/minute sliding window (Upstash Redis)
+- **Message length limit:** 1000 characters max input
+- **Response token cap:** 1500 output tokens (configurable via `MAX_OUTPUT_TOKENS`)
+- **Response caching:** Upstash Redis, 1-week TTL — cached responses bypass Voyage AI, Pinecone, and Claude entirely
+- **Cache scope:** Only fresh single-turn queries are cache-checked (not follow-ups in conversations)
 
 ### 6.4 Environment Variables
 
 ```env
 # Required
-ANTHROPIC_API_KEY=sk-ant-...          # Claude API key
-EMBEDDING_API_KEY=...                  # Voyage AI or OpenAI key
-NEXT_PUBLIC_APP_URL=https://...        # Public URL
+ANTHROPIC_API_KEY=sk-ant-...       # Claude API — anthropic.com/console
+VOYAGE_API_KEY=pa-...               # Voyage AI — dash.voyageai.com
+PINECONE_API_KEY=...                # Pinecone — pinecone.io
+PINECONE_INDEX=ns-budget-chat       # Your Pinecone index name
 
-# Optional (with defaults)
-PINECONE_API_KEY=...                   # If using Pinecone
-PINECONE_INDEX=ns-budget-chat          # Index name
-RATE_LIMIT_RPM=20                      # Requests per minute per IP
-MAX_OUTPUT_TOKENS=1500                 # Response length cap
-CACHE_TTL_HOURS=168                    # Cache lifetime (1 week default)
+# Recommended (rate limiting + caching)
+UPSTASH_REDIS_REST_URL=https://...
+UPSTASH_REDIS_REST_TOKEN=...
+
+# Optional tuning (with defaults)
+RATE_LIMIT_RPM=20                   # Requests per minute per IP
+MAX_OUTPUT_TOKENS=1500              # Claude response length cap
+CACHE_TTL_HOURS=168                 # Cache lifetime (default: 1 week)
 ```
+
+### 6.5 Security Headers (`next.config.mjs`)
+
+Applied to all routes via Next.js `headers()` config:
+
+| Header | Value |
+|--------|-------|
+| `X-Content-Type-Options` | `nosniff` |
+| `X-Frame-Options` | `DENY` |
+| `X-XSS-Protection` | `1; mode=block` |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=()` |
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` |
 
 ---
 
@@ -395,155 +442,139 @@ CACHE_TTL_HOURS=168                    # Cache lifetime (1 week default)
 
 ```
 ns-budget-chat/
-├── app/                        # Next.js App Router
-│   ├── page.tsx                # Main chat interface
-│   ├── layout.tsx              # Root layout with metadata + footer
+├── app/                           # Next.js App Router
+│   ├── page.tsx                   # Main layout (header + InfoSidebar + ChatInterface + Footer)
+│   ├── layout.tsx                 # Root layout with Vercel Analytics + font variables
+│   ├── globals.css                # Global styles: animations, scrollbar-hide, font vars
+│   ├── icon.svg                   # Favicon — Synexiom Labs logo on dark background
 │   └── api/
-│       ├── chat/route.ts       # Chat endpoint (streaming SSE)
-│       ├── suggestions/route.ts
-│       └── health/route.ts
-├── components/                 # React components
-│   ├── ChatInterface.tsx       # Main chat component
-│   ├── MessageBubble.tsx       # Individual message with citations
-│   ├── CitationBadge.tsx       # Clickable source reference
-│   ├── CitationPanel.tsx       # Side panel for source text
-│   ├── SuggestedQuestions.tsx   # Landing state starter cards
-│   └── Footer.tsx              # Disclaimer + attribution
-├── lib/                        # Core logic
+│       └── chat/route.ts          # Chat endpoint (AI SDK v6 streaming, RAG, cache, rate limit)
+├── components/
+│   ├── ChatInterface.tsx           # Chat state management, welcome screen, input
+│   ├── MessageBubble.tsx           # Message rendering + client-side citation parsing
+│   ├── CitationBadge.tsx           # Inline source reference badge
+│   ├── SuggestedQuestions.tsx      # Landing state starter question cards
+│   ├── SourcesPanel.tsx            # Fixed right panel with PDF source links
+│   ├── InfoSidebar.tsx             # Desktop left sidebar: branding + tracked links
+│   ├── MobileMenu.tsx              # Mobile hamburger menu with tracked links
+│   └── Footer.tsx                  # AI disclaimer + attribution footer
+├── lib/
 │   ├── rag/
-│   │   ├── retriever.ts        # Hybrid retrieval (semantic + structured)
-│   │   ├── embeddings.ts       # Embedding generation + caching
-│   │   ├── reranker.ts         # Result reranking logic
-│   │   └── prompts.ts          # System prompt template
+│   │   ├── retriever.ts            # Query classification + hybrid retrieval
+│   │   ├── embeddings.ts           # Voyage AI embedding calls (query + batch)
+│   │   ├── reranker.ts             # Chunk reranking + context string assembly
+│   │   └── prompts.ts              # System prompt template + OUT_OF_SCOPE_RESPONSE
 │   ├── pdf/
-│   │   ├── extractor.ts        # Text extraction from PDFs
-│   │   ├── table-extractor.ts  # Financial table extraction
-│   │   └── chunker.ts          # Content-aware chunking
-│   ├── cache.ts                # Response caching layer
-│   └── rate-limit.ts           # IP-based rate limiting
-├── scripts/                    # Build & ingest scripts
-│   ├── ingest.ts               # Download all budget PDFs
-│   ├── process.ts              # Extract, chunk, structure content
-│   ├── index.ts                # Build vector index from chunks
-│   └── validate.ts             # Run accuracy test suite
-├── data/                       # Processed budget data (gitignored except structure)
-│   ├── pdfs/                   # Raw downloaded PDFs
-│   ├── chunks/                 # Processed text chunks (JSON)
-│   ├── tables/                 # Extracted structured tables (JSON)
-│   └── ground-truth.json       # Validated Q&A pairs for testing
-├── public/                     # Static assets
-│   └── og-image.png            # Social share image
-├── tests/                      # Test files
-│   └── accuracy.test.ts        # Answer quality regression tests
-├── .env.example                # Environment variable template
+│   │   ├── extractor.ts            # pdf-parse text extraction
+│   │   └── chunker.ts              # Content-aware text chunking
+│   ├── cache.ts                    # Upstash Redis response cache (read + write)
+│   ├── rate-limit.ts               # Upstash sliding window rate limiter
+│   ├── tables.ts                   # Pre-structured financial table keyword lookup
+│   ├── pdf-urls.ts                 # Document name → PDF URL + #page anchor mapping
+│   └── utils.ts                    # Shared utilities
+├── scripts/
+│   ├── ingest.ts                   # Download all 6 budget PDFs
+│   ├── process.ts                  # Extract text, chunk, structure financial tables
+│   ├── index-vectors.ts            # Generate Voyage embeddings + upsert to Pinecone
+│   ├── validate.ts                 # Ground-truth accuracy test suite
+│   └── test-voyage.ts              # Diagnostic: verify Voyage API key + connectivity
+├── public/
+│   └── synexiom-logo.svg           # Synexiom Labs logo (transparent background)
+├── data/                           # Gitignored at runtime
+│   ├── pdfs/                       # Raw downloaded PDFs
+│   ├── chunks/                     # Processed text chunks (JSON)
+│   ├── tables/                     # Pre-structured financial tables (JSON, committed)
+│   └── ground-truth.json           # Validated Q&A pairs for testing
+├── types.ts                        # Shared TypeScript types (Chunk, QueryType, etc.)
+├── .env.example                    # Environment variable template
 ├── .gitignore
-├── CONTRIBUTING.md             # How to contribute
-├── LICENSE                     # MIT License
-├── README.md                   # Setup, usage, architecture overview
-├── TECH-SPEC.md                # This document
+├── CONTRIBUTING.md
+├── LICENSE                         # MIT
+├── README.md
+├── TECH-SPEC.md                    # This document
+├── next.config.mjs                 # Security headers + Next.js config
+├── tailwind.config.ts
 └── package.json
 ```
 
 ---
 
-## 8. Implementation Timeline (48 Hours)
+## 8. Deployment & Operations
 
-Single developer using Claude Code for accelerated implementation.
+### 8.1 Infrastructure
 
-### Day 1: Foundation (Hours 0–12)
+- **Hosting:** Vercel Hobby (free tier)
+- **Domain:** `nsbudget.synexiomlabs.com` — CNAME to `cname.vercel-dns.com`
+- **CI/CD:** Vercel auto-deploys from `main` branch. Preview deployments on PRs.
+- **Analytics:** Vercel Analytics — page views, unique visitors, referrers, countries, custom click events
+- **LLM Monitoring:** Anthropic Console — token usage, cost tracking, error rates
+- **Function timeout:** `maxDuration: 30` (verify against your Vercel plan limits)
 
-| Time | Task | Output | Risk |
-|------|------|--------|------|
-| **0–1** | Setup GitHub org + repo, scaffold Next.js, connect Vercel | Deployed skeleton | Low |
-| **1–4** | Download all 6 PDFs; build extraction pipeline (text + tables) | Processed chunks in `/data` | **Medium** — table extraction |
-| **4–6** | Generate embeddings; build and populate vector index | Searchable vector store | Low |
-| **6–8** | Build RAG pipeline: retrieval → context assembly → Claude API | Working `/api/chat` | **Medium** — prompt tuning |
-| **8–12** | Build chat UI: streaming, citation badges, suggested questions | Functional interface | Low |
+### 8.2 Cost Estimates (Monthly)
 
-### Day 2: Polish & Launch (Hours 12–24)
+Accurate figures based on actual implementation:
 
-| Time | Task | Output | Risk |
-|------|------|--------|------|
-| **12–15** | Test with 30+ real questions; tune prompts and retrieval | Validated accuracy | **High** — answer quality |
-| **15–18** | Add rate limiting, caching, error handling, disclaimer | Hardened API | Low |
-| **18–20** | Mobile responsiveness, accessibility, final styling | Polished UI | Low |
-| **20–22** | Write README, CONTRIBUTING.md, .env.example, this spec | Complete OSS repo | Low |
-| **22–24** | Final deployment, custom domain, share for feedback | **Live public tool** | Low |
+| Service | Per-query | Monthly (1,000 queries, 30% cache hit) |
+|---------|----------|---------------------------------------|
+| **Claude Sonnet 4.5** | ~$0.016 | ~$11 |
+| Voyage AI | ~$0.000001 | <$0.01 (200M free tokens) |
+| Pinecone | $0 | $0 (free tier — 100K records, unlimited queries) |
+| Upstash Redis | $0 | $0 (10K req/day free — covers ~3,300 queries/day) |
+| Vercel | $0 | $0 (Hobby tier) |
+| **Total** | **~$0.016** | **~$11** |
 
-### Critical Path Risk
+Voyage AI is effectively free indefinitely at this query volume. The 200M free token grant covers millions of query embeddings (each query uses ~15 tokens).
 
-The highest-risk task is **PDF table extraction (Hours 1–4).** Budget PDFs have complex multi-level tables that often don't extract cleanly.
+### 8.3 Scaling Triggers
 
-**Mitigation:** If automated extraction fails for specific tables, manually structure the ~10–15 critical financial summary tables as JSON. Automate the rest. Acceptable for Phase 1 — accuracy on key numbers matters more than complete automation.
-
----
-
-## 9. Deployment & Operations
-
-### 9.1 Infrastructure
-
-- **Hosting:** Vercel (Hobby tier for launch; Pro at $20/mo if traffic requires it)
-- **Domain:** `budget.synexiomlabs.com` or standalone (to be decided)
-- **CI/CD:** Vercel auto-deploys from `main` branch. Preview deployments for PRs.
-- **Monitoring:** Vercel Analytics (traffic) + Anthropic Dashboard (API usage/cost)
-
-### 9.2 Cost Estimates (Monthly)
-
-| Service | Cost | Notes |
-|---------|------|-------|
-| Vercel Hosting | $0–$20 | Hobby free; Pro if needed |
-| Claude Sonnet 4 API | $20–$60 | ~1,000–3,000 queries at ~$0.02/query |
-| Embedding API | $5–$15 | Per-query embedding generation |
-| Pinecone | $0 | Free tier covers this volume |
-| Domain | $0–$15/yr | Subdomain of existing domain is free |
-| **Total** | **$25–$95/mo** | Caching significantly reduces API costs |
-
-### 9.3 Scaling Triggers
-
-- **> 5,000 queries/month:** Upgrade Vercel to Pro, increase cache aggressiveness
-- **> 15,000 queries/month:** Consider dedicated embedding cache (Redis), evaluate Anthropic batch API
-- **> 50,000 queries/month:** This is a good problem. Explore sponsorship or community funding.
+- **> 3,300 queries/day:** Upstash Redis free tier exceeded — upgrade to pay-as-you-go (~$0.006 per 100K requests beyond free)
+- **> 5,000 queries/month:** Monitor Anthropic spend; caching hit rate should be improving by this point
+- **> 20,000 queries/month:** Consider Vercel Pro for better function performance and longer function timeout
+- **> 50,000 queries/month:** Good problem. Evaluate community funding, sponsorship, or Anthropic batch API for bulk queries
 
 ---
 
-## 10. Risks & Mitigations
+## 9. Risks & Mitigations
 
 | Risk | Severity | Mitigation |
 |------|----------|------------|
-| **Hallucinated numbers** | Critical | Citation mandate in prompt; never-fabricate rule; ground truth validation; regression test suite |
-| **Poor table extraction** | High | Manual structuring of critical tables as fallback; validate against source PDFs |
-| **API cost overrun** | Medium | Rate limiting, response caching, spending alerts, token caps |
-| **Political misinterpretation** | Medium | Neutral tone in prompt; disclaimer; no editorializing |
-| **Budget window closes** | Medium | 48-hour timeline; ship functional Phase 1, iterate on quality |
-| **Low adoption** | Low | Share through existing networks; open source community; useful product finds users |
+| **Hallucinated numbers** | Critical | Citation mandate in prompt; never-fabricate rule; pre-structured tables for key figures; ground truth test suite |
+| **Poor table extraction** | High | Key tables manually pre-structured as JSON in `data/tables/`; vector search for narrative |
+| **API cost overrun** | Medium | Rate limiting (20 RPM/IP), response caching (1-week TTL), 1500 token output cap, Anthropic spend alerts |
+| **Silent retrieval failure** | Medium | Voyage/Pinecone errors caught and logged; fallback context message sent to Claude rather than crashing |
+| **Political misinterpretation** | Medium | Neutral tone enforced in system prompt; disclaimer on every page; no editorializing rule |
+| **Cache stream format** | Resolved | `useChat` requires both `d:` and `e:` finish chunks — both present in `streamCachedText` |
 
 ---
 
-## 11. Future Roadmap
+## 10. Future Roadmap
 
-### Phase 2: Contextual Intelligence (Week 2–3)
-- Ingest Budget 2025–26 for year-over-year comparisons
-- Add news coverage context for media interpretation
-- Department-specific deep dives
-- "What changed?" summary mode showing key differences from last year
+### Phase 2: Contextual Intelligence (Weeks 2–4)
+
+- Ingest Budget 2025–26 for year-over-year comparison support
+- "What changed?" summary mode
+- Department-specific deep dives with better metadata filtering
+- Improved table extraction coverage
 
 ### Phase 3: Reusable Template (Month 2+)
-- Abstract budget-specific logic into configurable template
-- Create "budget kit" documentation: how to ingest any government budget
-- Publish as a GitHub template repository anyone can fork
-- Target: any province or municipality can deploy their own version
+
+- Abstract budget-specific logic into a configurable template
+- Create "budget kit" documentation: how to adapt for any jurisdiction
+- GitHub template repository anyone can fork in one click
+- Target: any province or municipality can deploy their own version in a few hours
 
 ### Phase 4: Platform & Community
+
 - Multilingual support (French) for bilingual accessibility
-- API access for third-party developers
-- Community-contributed "context packs" for different policy areas
+- API access for third-party integrations
 - Municipal budget variants (CBRM, HRM, etc.)
+- Community-contributed "context packs" for specific policy areas
 
 ---
 
-## 12. Ground Truth Test Questions
+## 11. Ground Truth Test Questions
 
-These questions (with verified answers) form the accuracy test suite. Each must be validated against source documents before launch.
+These questions (with verified answers) form the accuracy test suite. Run `npm run validate` before each deployment.
 
 ```json
 [
@@ -570,7 +601,7 @@ These questions (with verified answers) form the accuracy test suite. Each must 
   {
     "question": "How many FTE positions are being reduced?",
     "expected_answer_contains": ["1,000"],
-    "source": "Budget Address / News releases"
+    "source": "Budget Address"
   },
   {
     "question": "What is the Fiscal Stability Plan?",
@@ -595,29 +626,11 @@ These questions (with verified answers) form the accuracy test suite. Each must 
   {
     "question": "What tax savings does the budget continue?",
     "expected_answer_contains": ["$681.2 million", "$1,400"],
-    "source": "News release / Highlights"
+    "source": "Highlights"
   }
 ]
 ```
 
-Add more questions during testing (target 30+). Run `scripts/validate.ts` before every deployment.
-
 ---
 
-## 13. README Outline
-
-The README.md should cover:
-
-1. **Hero section** — App name, one-line description, screenshot
-2. **"Built so you don't need an AI subscription or a finance degree to understand where your tax dollars are going."**
-3. **Quick start** — Clone, configure `.env`, run `npm run ingest`, `npm run dev`
-4. **How it works** — Brief architecture (1 paragraph + diagram)
-5. **Deploying your own** — Vercel one-click deploy button
-6. **Adapting for other budgets** — How to point this at different PDFs
-7. **Contributing** — Link to CONTRIBUTING.md
-8. **License** — MIT
-9. **Footer** — "Created by Meghrajsinh Solanki. Powered by Synexiom Labs."
-
----
-
-*This is a living document. Update as implementation decisions are made.*
+*This document reflects the Phase 1 delivered system. Update as implementation evolves.*
