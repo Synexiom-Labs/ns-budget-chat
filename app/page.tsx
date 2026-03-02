@@ -1,6 +1,7 @@
 import ChatInterface from '@/components/ChatInterface'
 import Footer from '@/components/Footer'
 import InfoSidebar from '@/components/InfoSidebar'
+import MobileMenu from '@/components/MobileMenu'
 
 function SynexiomLogo({ size = 28 }: { size?: number }) {
   return (
@@ -17,7 +18,7 @@ export default function Home() {
     <div className="flex flex-col h-full min-h-screen">
       {/* Header — Synexiom dark void */}
       <header
-        className="sticky top-0 z-10 flex-shrink-0"
+        className="sticky top-0 z-10 flex-shrink-0 relative"
         style={{
           background: 'rgb(6, 8, 16)',
           borderBottom: '1px solid rgb(20, 28, 48)',
@@ -44,22 +45,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right: official budget link */}
-          <a
-            href="https://www.novascotia.ca/documents/budget-documents-2026-2027"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs transition-colors"
-            style={{
-              color: 'rgba(226, 228, 234, 0.65)',
-              border: '1px solid rgb(30, 42, 66)',
-              padding: '5px 12px',
-              borderRadius: '6px',
-              textDecoration: 'none',
-            }}
-          >
-            Official Budget ↗
-          </a>
+          {/* Right: desktop link + mobile menu */}
+          <MobileMenu />
         </div>
       </header>
 
