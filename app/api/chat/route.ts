@@ -7,15 +7,17 @@ import { buildSystemPrompt, OUT_OF_SCOPE_RESPONSE } from '@/lib/rag/prompts'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { getCachedResponse, setCachedResponse } from '@/lib/cache'
 
-// Stream a cached response in the AI SDK v6 data-stream wire format
+// Stream a text response in the AI SDK v6 data-stream wire format.
+// useChat requires BOTH d: (step finish) AND e: (message finish) to commit
+// the message to state. Missing e: causes the response to be silently discarded.
 function streamCachedText(text: string, remaining: number): Response {
   const encoder = new TextEncoder()
+  const finish = `{"finishReason":"stop","usage":{"promptTokens":0,"completionTokens":0}}`
   const stream = new ReadableStream({
     start(controller) {
       controller.enqueue(encoder.encode(`0:${JSON.stringify(text)}\n`))
-      controller.enqueue(
-        encoder.encode(`d:{"finishReason":"stop","usage":{"promptTokens":0,"completionTokens":0}}\n`)
-      )
+      controller.enqueue(encoder.encode(`d:${finish}\n`))
+      controller.enqueue(encoder.encode(`e:${finish}\n`))
       controller.close()
     },
   })
@@ -94,10 +96,7 @@ export async function POST(req: NextRequest) {
   const isFollowUp = conversationMessages.length > 1
   const queryType = classifyQuery(message)
   if (queryType === 'out-of-scope' && !isFollowUp) {
-    return new Response(OUT_OF_SCOPE_RESPONSE, {
-      status: 200,
-      headers: { 'Content-Type': 'text/plain' },
-    })
+    return streamCachedText(OUT_OF_SCOPE_RESPONSE, remaining)
   }
 
   // --- Cache check (only for fresh single-turn queries, not follow-ups) ---
