@@ -7,24 +7,33 @@ import { buildSystemPrompt, OUT_OF_SCOPE_RESPONSE } from '@/lib/rag/prompts'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { getCachedResponse, setCachedResponse } from '@/lib/cache'
 
-// Stream a text response in the AI SDK v6 data-stream wire format.
-// useChat requires BOTH d: (step finish) AND e: (message finish) to commit
-// the message to state. Missing e: causes the response to be silently discarded.
+// Stream a text response in the AI SDK v6 UI message stream (SSE) format.
+// The client uses parseJsonEventStream (EventSourceParserStream) which expects
+// SSE "data: {...}\n\n" events with the uiMessageChunkSchema chunk types.
 function streamCachedText(text: string, remaining: number): Response {
   const encoder = new TextEncoder()
-  const finish = `{"finishReason":"stop","usage":{"promptTokens":0,"completionTokens":0}}`
+  const textId = 'cached-text-1'
+  const chunks = [
+    { type: 'start' },
+    { type: 'start-step' },
+    { type: 'text-start', id: textId },
+    { type: 'text-delta', id: textId, delta: text },
+    { type: 'text-end', id: textId },
+    { type: 'finish-step' },
+    { type: 'finish', finishReason: 'stop' },
+  ]
   const stream = new ReadableStream({
     start(controller) {
-      controller.enqueue(encoder.encode(`0:${JSON.stringify(text)}\n`))
-      controller.enqueue(encoder.encode(`d:${finish}\n`))
-      controller.enqueue(encoder.encode(`e:${finish}\n`))
+      for (const chunk of chunks) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`))
+      }
       controller.close()
     },
   })
   return new Response(stream, {
     headers: {
-      'Content-Type': 'text/plain; charset=utf-8',
-      'x-vercel-ai-data-stream': 'v1',
+      'Content-Type': 'text/event-stream',
+      'x-vercel-ai-ui-message-stream': 'v1',
       'X-RateLimit-Remaining': String(remaining),
       'X-Cache': 'HIT',
     },
