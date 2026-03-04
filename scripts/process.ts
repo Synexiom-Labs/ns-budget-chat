@@ -62,6 +62,14 @@ const DOC_CONFIG: Array<{ filename: string; docInfo: DocInfo }> = [
       fiscal_year: '2026-27',
     },
   },
+  {
+    filename: 'grant-reductions-media-feb-24-final.pdf',
+    docInfo: {
+      document_name: 'Grant Reductions Briefing',
+      content_type: 'summary',
+      fiscal_year: '2026-27',
+    },
+  },
 ]
 
 async function main() {

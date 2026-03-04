@@ -23,6 +23,8 @@ const PDF_URLS: Record<string, string> = {
     'https://www.novascotia.ca/sites/default/files/documents/7-4172/government-business-plan-2026-27-en.pdf',
   'Additional Appropriations':
     'https://www.novascotia.ca/sites/default/files/documents/7-4172/additional-appropriations-budget-2026-27-en.pdf',
+  'Grant Reductions Briefing': 
+    'https://s3.documentcloud.org/documents/27413042/grant-reductions-media-feb-24-final.pdf',
 }
 
 /** Returns a PDF URL with page anchor, or empty string if doc is unknown. */
