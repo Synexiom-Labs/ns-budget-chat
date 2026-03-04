@@ -1,5 +1,9 @@
 import { PageContent, ProcessedChunk, DocInfo } from '@/types'
-import { v4 as uuidv4 } from 'uuid'
+
+function makeChunkId(docName: string, index: number): string {
+  const slug = docName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+  return `${slug}-${String(index).padStart(4, '0')}`
+}
 
 const TARGET_CHUNK_TOKENS = 650
 const OVERLAP_TOKENS = 100
@@ -22,7 +26,7 @@ export function chunkDocument(pages: PageContent[], docInfo: DocInfo): Processed
     const fullText = pages.map((p) => p.text).join('\n')
     return [
       {
-        id: uuidv4(),
+        id: makeChunkId(docInfo.document_name, 0),
         content: fullText.slice(0, 8000), // safety cap
         metadata: {
           document_name: docInfo.document_name,
@@ -67,7 +71,7 @@ export function chunkDocument(pages: PageContent[], docInfo: DocInfo): Processed
     const sectionTitle = detectSectionTitle(chunkText)
 
     chunks.push({
-      id: uuidv4(),
+      id: makeChunkId(docInfo.document_name, chunks.length),
       content: chunkText.trim(),
       metadata: {
         document_name: docInfo.document_name,

@@ -68,6 +68,13 @@ async function main() {
   await ensureIndex(pc)
   const index = pc.index(INDEX_NAME)
 
+  // --clean: wipe all existing vectors before re-indexing (required after chunk ID changes)
+  if (process.argv.includes('--clean')) {
+    console.log('Deleting all existing vectors (--clean)...')
+    await index.deleteAll()
+    console.log('  ✓ Index cleared\n')
+  }
+
   let upserted = 0
 
   for (let i = 0; i < chunks.length; i += UPSERT_BATCH_SIZE) {

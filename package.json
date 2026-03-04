@@ -10,6 +10,7 @@
     "ingest": "tsx scripts/ingest.ts",
     "process": "tsx scripts/process.ts",
     "index": "tsx scripts/index-vectors.ts",
+    "reindex": "tsx scripts/index-vectors.ts --clean",
     "validate": "tsx scripts/validate.ts"
   },
   "dependencies": {

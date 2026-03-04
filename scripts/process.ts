@@ -66,7 +66,7 @@ const DOC_CONFIG: Array<{ filename: string; docInfo: DocInfo }> = [
     filename: 'grant-reductions-media-feb-24-final.pdf',
     docInfo: {
       document_name: 'Grant Reductions Briefing',
-      content_type: 'summary',
+      content_type: 'narrative',
       fiscal_year: '2026-27',
     },
   },
